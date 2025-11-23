@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Final — Happy Birthday</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#0b0410;
+    --bg2:#2b0330;
+    --card-start: rgba(255,80,160,0.12);
+    --card-end: rgba(120,30,140,0.12);
+    --pink1:#ff7bb3;
+    --pink2:#ffd0ea;
+    --glass: rgba(255,255,255,0.04);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:
+    radial-gradient(800px 400px at 10% 10%, rgba(255,80,160,0.04), transparent),
+    linear-gradient(180deg,var(--bg1), #110017 60%);
+    font-family:Montserrat, system-ui, Arial; color:white; -webkit-font-smoothing:antialiased;}
+
+  /* confetti canvas sits behind everything */
+  canvas.confetti { position:fixed; inset:0; pointer-events:none; z-index:0; }
+
+  .wrap { position:relative; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:28px; z-index:1; }
+
+  .card {
+    width:min(880px,92%);
+    max-width:920px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    border-radius:18px;
+    padding:26px;
+    box-shadow: 0 30px 90px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.02);
+    display:flex;
+    gap:28px;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    z-index:2;
+  }
+
+  .left {
+    width:360px; max-width:40%;
+    display:flex; flex-direction:column; align-items:center; gap:18px;
+  }
+  .left .badge {
+    width:120px; height:120px; border-radius:14px; overflow:hidden; box-shadow:0 30px 60px rgba(0,0,0,0.6);
+    background:linear-gradient(180deg, rgba(255,120,180,0.06), rgba(255,120,160,0.02));
+    display:flex; align-items:center; justify-content:center;
+  }
+  .badge img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  .left h3 { margin:0; font-family:Pacifico, cursive; font-size:20px; color:var(--pink1) }
+  .left p.subtitle { margin:0; color:#ffdfef; font-size:14px; text-align:center }
+
+  .right {
+    flex:1 1 60%;
+    padding:18px 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+    border-radius:12px;
+    min-height:240px;
+    display:flex; flex-direction:column; justify-content:center;
+  }
+  .title { font-family:Pacifico, cursive; color:var(--pink2); font-size:30px; margin:0 0 8px; text-shadow:0 6px 18px rgba(0,0,0,0.5) }
+  .subtitle { color:#f7d8e7; margin:0 0 18px; font-weight:600 }
+  .message {
+    color:#ffeef6; font-size:16px; line-height:1.8;
+    max-height:340px; overflow:auto; padding-right:6px;
+  }
+
+  .controls { display:flex; gap:12px; margin-top:20px; justify-content:center; }
+  .btn {
+    border:0; cursor:pointer; padding:12px 26px; border-radius:28px; font-weight:700; font-size:15px;
+    box-shadow: 0 14px 36px rgba(0,0,0,0.45);
+  }
+  .btn.replay { background: linear-gradient(90deg,var(--pink1), var(--pink2)); color:#24030b; }
+  .btn.close { background:transparent; color:#ffbfe0; border:1px solid rgba(255,255,255,0.06) }
+
+  /* small mobile adjustments */
+  @media (max-width:720px){
+    .card{ flex-direction:column; padding:18px }
+    .left{ width:80%; max-width:none; order:1 }
+    .right{ width:100%; order:2; padding:14px 8px }
+    .badge{ width:220px; height:220px; border-radius:18px; }
+    .title{ font-size:24px }
+  }
+
+  /* rounded card border glow */
+  .card::before{
+    content:"";
+    position:absolute; inset:-1px; border-radius:20px;
+    background: linear-gradient(90deg, rgba(255,123,179,0.08), rgba(255,208,234,0.04));
+    z-index:-1;
+    filter: blur(18px); opacity:0.95;
+    pointer-events:none;
+  }
+
+  /* small confetti overlay (subtle) */
+  .confettiOverlay { position:absolute; inset:0; z-index:1; pointer-events:none; }
+</style>
+</head>
+<body>
+<canvas class="confetti" id="confettiCanvas"></canvas>
+
+<div class="wrap" role="main" aria-labelledby="mainTitle">
+  <div class="card" role="region" aria-label="Final birthday message">
+    <div class="left" aria-hidden="false">
+      <div class="badge" title="Lots of love for you">
+        <!-- show an image (use hero.png or a teddy image). If you want different image, replace hero.png -->
+        <img src="hero.png" alt="Lots of love for you (image)" />
+      </div>
+      <h3>Lots of love for you ❤️</h3>
+      <p class="subtitle">Once again, Happy Birthday! Hope you loved your surprise.</p>
+    </div>
+
+    <div class="right" role="article">
+      <div class="title" id="mainTitle">Once again — Happy Birthday, Madam Ji!</div>
+      <div class="subtitle">Have a wonderful day filled with love and light</div>
+
+      <div class="message" id="finalMsg" tabindex="0">
+        Today we celebrate you — the warmth you bring, the smiles you spark, and the quiet strength you carry with grace.
+        Your presence makes ordinary days feel special; your kindness is an everyday gift to everyone around you.
+        On this beautiful birthday, I wish you laughter that lingers, adventures that excite your heart, and moments that remind you how truly loved you are.
+
+        May your day be wrapped in the gentlest hugs, bright surprises, and memories you'll cherish forever. Thank you for being the amazing person you are — warm, caring, and endlessly inspiring.
+
+        Once again — happy birthday, Madam Ji. May this year bring you everything your heart wishes for. 🌸🎉
+      </div>
+
+      <div class="controls" role="group" aria-label="final controls">
+        <button class="btn replay" id="replayBtn" title="Replay the surprise">🔁 Replay</button>
+        <button class="btn close" id="homeBtn" title="Back to cover">🏠 Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- optionally continue playing same music file if present -->
+<audio id="bgmusic" src="bgmusic1.mp3" loop preload="auto"></audio>
+
+<script>
+/* Simple confetti generator on canvas (lightweight) */
+(function(){
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  let w = canvas.width = innerWidth;
+  let h = canvas.height = innerHeight;
+  window.addEventListener('resize', ()=>{ w = canvas.width = innerWidth; h = canvas.height = innerHeight; });
+
+  // create particles
+  const colors = ['#FF7BB3','#FFD0EA','#FFD07B','#7FE0FF','#B88BFF','#FF9BBB'];
+  const particles = [];
+  const NUM = Math.round(Math.min(120, Math.max(60, (w*h)/50000)));
+
+  function rand(min, max){ return Math.random()*(max-min)+min; }
+  for(let i=0;i<NUM;i++){
+    particles.push({
+      x: rand(0,w),
+      y: rand(-h,0),
+      r: rand(6,14),
+      d: rand(1,3),
+      angle: rand(0,Math.PI*2),
+      vx: rand(-0.5,0.5),
+      vy: rand(0.6,2.2),
+      color: colors[Math.floor(Math.random()*colors.length)],
+      tilt: rand(-0.3,0.3)
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    particles.forEach(p=>{
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      // draw a rectangle confetti piece
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.r*0.6, -p.r*0.4, p.r*1.2, p.r*0.8);
+      ctx.restore();
+      // update
+      p.x += p.vx + Math.sin(p.angle)*0.6;
+      p.y += p.vy;
+      p.angle += p.tilt*0.04;
+      if(p.y > h + 20){
+        p.x = rand(0,w);
+        p.y = rand(-50,-10);
+      }
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  // start music on user interaction (if allowed)
+  const bg = document.getElementById('bgmusic');
+  function tryPlay(){ bg.play().catch(()=>{}); window.removeEventListener('click', tryPlay); }
+  window.addEventListener('click', tryPlay);
+
+  // Controls
+  document.getElementById('replayBtn').addEventListener('click', function(){
+    // go back to start (card.html). If your cover file name is different, change it.
+    location.href = 'cover.html';
+  });
+  document.getElementById('homeBtn').addEventListener('click', ()=> location.href = 'www.google.com');
+
+})();
+</script>
+</body>
+</html>

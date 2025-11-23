@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Light the Candle — Cake</title>
+<style>
+  :root{--bg1:#0b0510;--cardW:520px}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),#160718);font-family:Inter,system-ui,Roboto,Arial;color:#fff}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .card{width:100%;max-width:var(--cardW);background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.06));border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 20px 60px rgba(0,0,0,0.6)}
+  .flags{display:flex;justify-content:center;gap:8px;margin-bottom:8px}
+  .flag{width:26px;height:12px;border-radius:6px;transform:skewX(-10deg)}
+  h1{margin:6px 0 2px;font-size:20px;text-align:center;color:#ffd5f2;text-shadow:0 8px 22px rgba(0,0,0,0.6)}
+  .sub{color:rgba(255,255,255,0.85);text-align:center;margin:0 0 14px;font-size:14px}
+  .imgWrap{position:relative;border-radius:12px;overflow:hidden;padding:12px;background:#000;display:flex;align-items:center;justify-content:center}
+  .cakeImg{max-width:100%;height:auto;display:block;filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6));}
+
+  /* Candle overlay */
+  .candle{position:absolute; left:50%; transform:translateX(-50%); top:28%; width:46px; height:110px; display:flex;flex-direction:column;align-items:center;pointer-events:auto; z-index:30; cursor:pointer;}
+  .wax{width:18px;height:68px;border-radius:6px;background:linear-gradient(180deg,#ffd6d6,#ff6f6f 60%,#b91e1e);box-shadow: inset 0 6px 12px rgba(255,255,255,0.12), inset 0 -8px 18px rgba(0,0,0,0.3)}
+  .wax::before{content:"";position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:34px;height:10px;border-radius:8px;background:linear-gradient(180deg,#fff7ea, rgba(255,255,255,0.04));opacity:0.06;filter:blur(2px)}
+  .wick{position:absolute;bottom:66px;left:50%;transform:translateX(-50%);width:3px;height:6px;background:#2b1b10;border-radius:2px;z-index:6}
+  .flameWrap{height:48px;display:flex;align-items:flex-start;justify-content:center;margin-bottom:6px;pointer-events:none}
+  .flame{width:20px;height:36px;position:relative;opacity:0;transition:opacity .12s}
+  .f1,.f2,.f3{position:absolute;left:50%;transform:translateX(-50%);bottom:0;border-radius:50% 50% 40% 40%}
+  .f1{width:10px;height:18px;background:radial-gradient(circle at 40% 30%, #fff9d6 0%, #ffe37e 40%, rgba(255,255,255,0) 60%);z-index:3;filter:blur(.2px)}
+  .f2{width:16px;height:28px;background:radial-gradient(circle at 30% 30%, #ffd38a 0%, #ff8b46 50%, rgba(0,0,0,0) 60%);z-index:2;opacity:0.95}
+  .f3{width:22px;height:36px;background:radial-gradient(circle at 30% 30%, rgba(255,140,80,0.22) 0%, rgba(255,90,60,0.05) 45%, transparent 60%);z-index:1;filter:blur(2px);opacity:0.9}
+  .flame.lit{opacity:1;animation:flk 650ms infinite linear;filter:drop-shadow(0 12px 18px rgba(255,120,60,0.22))}
+  @keyframes flk{0%{transform:translateY(0) scale(.98) rotate(-5deg)}50%{transform:translateY(-3px) scale(1.03) rotate(6deg)}100%{transform:translateY(0) scale(1) rotate(-4deg)}}
+
+  .glow{position:absolute;left:50%;transform:translateX(-50%);top:22%;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle at 50% 40%, rgba(255,200,80,0.18), rgba(255,100,140,0.02) 40%, transparent 60%);filter:blur(8px);opacity:0;transition:opacity .45s;pointer-events:none;z-index:20}
+  .glow.on{opacity:1}
+
+  .message{margin-top:14px;text-align:center;font-weight:800;font-size:18px;color:#ffe9f6;opacity:0;transform:translateY(8px);transition:all .38s}
+  .message.show{opacity:1;transform:none}
+
+  .ctrls{display:flex;gap:12px;justify-content:center;margin-top:16px}
+  .btn{padding:10px 22px;border-radius:30px;border:none;background:linear-gradient(90deg,#ff3fa1,#ff83b3);color:#fff;font-weight:700;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#ffd7ef}
+  .btn.secondary{background:linear-gradient(90deg,#7b5cff,#ff80d8)}
+
+  #confetti{position:fixed;inset:0;z-index:1000;pointer-events:none}
+
+  @media(max-width:440px){
+    .card{padding:12px}
+    .candle{width:40px;height:96px}
+    .wax{height:56px;width:16px}
+    .glow{width:120px;height:120px;top:18%}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card" role="main" aria-label="Birthday cake card">
+    <div class="flags" aria-hidden="true">
+      <div class="flag" style="background:#ff5bb3"></div>
+      <div class="flag" style="background:#ffd66a"></div>
+      <div class="flag" style="background:#7be8ff"></div>
+      <div class="flag" style="background:#b08cff"></div>
+      <div class="flag" style="background:#ff8ab0"></div>
+    </div>
+
+    <h1>Happy Birthday to my Bestie</h1>
+    <div class="sub">Tap the candle to light it — works on phone & laptop</div>
+
+    <div class="imgWrap" id="imgWrap" aria-hidden="false">
+      <img src="cake.png" id="cakeImg" class="cakeImg" alt="Birthday cake"/>
+      <div class="glow" id="glow" aria-hidden="true"></div>
+
+      <!-- overlay candle (position updated by JS to sit on cake) -->
+      <div class="candle" id="candle" role="button" tabindex="0" aria-pressed="false" title="Tap to light">
+        <div class="flameWrap" aria-hidden="true">
+          <div class="flame" id="flame">
+            <div class="f3"></div>
+            <div class="f2"></div>
+            <div class="f1"></div>
+          </div>
+        </div>
+        <div class="wax">
+          <div class="wick" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="message" id="message">Happy Birthday, Madam Ji! 🎉</div>
+
+    <div class="ctrls" role="group" aria-label="controls">
+      <button class="btn" id="replay">Replay</button>
+      <!-- NAVIGATES to balloons.html (make sure that file exists in the same folder) -->
+      <button class="btn secondary" id="next">Next</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="confetti"></canvas>
+<audio id="bg" src="bgmusic.mp3" loop preload="auto"></audio>
+
+<script>
+/* Behavior:
+ - Candle auto-positions to sit visually on cake center-top based on cake image bounding box.
+ - Clicking/tapping candle lights flame, turns on glow, plays bg music, shows message and confetti.
+ - Replay resets and re-lights.
+ - Next navigates to balloons.html
+*/
+
+const cakeImg = document.getElementById('cakeImg');
+const candle = document.getElementById('candle');
+const flame = document.getElementById('flame');
+const glow = document.getElementById('glow');
+const message = document.getElementById('message');
+const bg = document.getElementById('bg');
+const replayBtn = document.getElementById('replay');
+const nextBtn = document.getElementById('next');
+
+const canvas = document.getElementById('confetti');
+const ctx = canvas.getContext('2d');
+let particles = [], running=false;
+
+function resizeCanvas(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+resizeCanvas(); window.addEventListener('resize', resizeCanvas);
+
+function rand(a,b){ return Math.random()*(b-a)+a; }
+function spawnConfetti(x,y,amt=140){
+  for(let i=0;i<amt;i++){
+    particles.push({
+      x:x + rand(-40,40),
+      y:y + rand(-10,10),
+      vx:rand(-6,6),
+      vy:rand(-14,-3),
+      size:rand(6,14),
+      rot:rand(0,360),
+      color:`hsl(${Math.floor(rand(0,360))},70%,60%)`,
+      life:rand(60,140)
+    });
+  }
+  if(!running) drawConfetti();
+}
+function drawConfetti(){
+  running=true;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    p.vy += 0.28;
+    p.x+=p.vx; p.y+=p.vy; p.rot += 6;
+    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+    ctx.fillStyle = p.color; ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6);
+    ctx.restore();
+    p.life--;
+    if(p.y>canvas.height+30||p.life<=0) particles.splice(i,1);
+  }
+  if(particles.length) requestAnimationFrame(drawConfetti); else running=false;
+}
+
+/* Position candle ON the cake */
+function positionCandle(){
+  const wrapRect = document.getElementById('imgWrap').getBoundingClientRect();
+  const imgRect = cakeImg.getBoundingClientRect();
+
+  // center horizontally on image and place at a % down from top (tweak as needed)
+  const relLeft = (imgRect.left - wrapRect.left) + imgRect.width/2;
+  const relTop  = (imgRect.top - wrapRect.top) + imgRect.height*0.22;
+
+  candle.style.left = relLeft + 'px';
+  candle.style.top  = relTop + 'px';
+  candle.style.transform = 'translateX(-50%)';
+}
+window.addEventListener('load', ()=> { positionCandle(); });
+window.addEventListener('resize', ()=> { positionCandle(); });
+cakeImg.addEventListener('load', positionCandle);
+
+/* Light behavior */
+let lit=false;
+function lightCandle(){
+  if(!lit){
+    lit = true;
+    flame.classList.add('lit');
+    glow.classList.add('on');
+    message.classList.add('show');
+    candle.setAttribute('aria-pressed','true');
+    const cRect = candle.getBoundingClientRect();
+    spawnConfetti(cRect.left + cRect.width/2, cRect.top + 8, 240);
+    if(bg.paused){
+      bg.volume = 0.12;
+      bg.play().catch(()=>{});
+    }
+  } else {
+    const cRect = candle.getBoundingClientRect();
+    spawnConfetti(cRect.left + cRect.width/2, cRect.top + 8, 100);
+  }
+}
+
+/* click handlers */
+candle.addEventListener('click', (e)=>{ e.stopPropagation(); lightCandle(); });
+candle.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); lightCandle(); }});
+cakeImg.addEventListener('click', ()=> lightCandle());
+
+replayBtn.addEventListener('click', ()=>{
+  flame.classList.remove('lit'); glow.classList.remove('on'); message.classList.remove('show'); lit=false;
+  setTimeout(()=> lightCandle(), 220);
+});
+
+/* NAVIGATION: Now actually go to balloons.html */
+nextBtn.addEventListener('click', ()=>{
+  // simple transition: briefly play confetti then navigate
+  const rect = candle.getBoundingClientRect();
+  spawnConfetti(rect.left + rect.width/2, rect.top + 8, 200);
+  // small delay so user sees the confetti
+  setTimeout(()=> {
+    // change this filename if your balloons page has a different name
+    window.location.href = 'balloons.html';
+  }, 350);
+});
+
+/* ensure candle placed at load if image already cached */
+if(cakeImg.complete) positionCandle();
+</script>
+</body>
+</html>

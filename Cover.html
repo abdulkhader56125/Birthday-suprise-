@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Happy Birthday — Cover</title>
+
+<!-- Fonts (system fallback if offline) -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Pacifico&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg1:#0f0710;
+    --bg2:#2b062a;
+    --accent1:#ff48b1;
+    --accent2:#6be0ff;
+    --glass: rgba(255,255,255,0.05);
+  }
+  html,body{height:100%;margin:0;font-family:Montserrat,system-ui,-apple-system,'Segoe UI',Roboto,"Helvetica Neue",Arial;}
+  body{
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(107,224,255,0.04), transparent 8%),
+                radial-gradient(900px 400px at 90% 90%, rgba(255,72,177,0.04), transparent 8%),
+                linear-gradient(180deg,var(--bg1),var(--bg2));
+    color:#fff; overflow:hidden;
+  }
+
+  /* top bunting */
+  .bunting{
+    position: absolute; left:0; right:0; top:22px; height:140px; pointer-events:none;
+    display:flex; align-items:flex-start; justify-content:center;
+    transform: translateY(-10px);
+  }
+  .bunting .flag { width:34px; height:26px; margin:0 6px; clip-path: polygon(0 0,100% 0,80% 100%,20% 100%); }
+  .flag:nth-child(odd){ background: linear-gradient(135deg,#ff7ab8,#ff69b4); }
+  .flag:nth-child(even){ background: linear-gradient(135deg,#6be0ff,#4bb8ff); }
+
+  /* center layout */
+  .center {
+    position:relative; height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column;
+    gap:28px; text-align:center; padding:40px 20px;
+  }
+
+  h1.title{
+    font-family: 'Pacifico', cursive;
+    font-size:34px; letter-spacing:1px; margin:0;
+    color: #ffd8f0; text-shadow: 0 6px 30px rgba(0,0,0,0.6);
+  }
+  p.subtitle{
+    margin:6px 0 0; font-size:16px; color: #ffd6ff; opacity:0.9;
+  }
+
+  /* neon ring + countdown */
+  .ring-wrap{ position:relative; width:240px; height:240px; display:flex; align-items:center; justify-content:center; }
+  .neon-ring{
+    position:absolute; inset:0; border-radius:50%;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.02), transparent 10%),
+      conic-gradient(from 120deg, var(--accent2), var(--accent1), #ff77cc, var(--accent2));
+    filter: blur(16px) saturate(130%);
+    opacity:0.95; transform: scale(0.98);
+    animation: ringPulse 1.8s ease-in-out infinite;
+  }
+  .ring-shine{
+    position:absolute; inset:14px; border-radius:50%; background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(255,255,255,0.02));
+    box-shadow: inset 0 10px 40px rgba(0,0,0,0.5);
+  }
+  @keyframes ringPulse{
+    0%{ transform: scale(0.95) rotate(0deg); filter: blur(14px) saturate(120%); }
+    50%{ transform: scale(1.03) rotate(10deg); filter: blur(18px) saturate(160%); }
+    100%{ transform: scale(0.95) rotate(0deg); filter: blur(14px) saturate(120%); }
+  }
+
+  /* inner counter circle */
+  .counter{
+    position:relative; width:180px; height:180px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.02);
+    border:1px solid rgba(255,255,255,0.04);
+    backdrop-filter: blur(6px);
+  }
+  .counter .num {
+    font-size:78px; font-weight:800; color: #ffcee9;
+    text-shadow: 0 8px 30px rgba(107,224,255,0.08);
+    transform: translateY(-6px);
+  }
+  .counter .small { font-size:14px; opacity:0.9; margin-top:-6px; color:#ffd6f5; }
+
+  /* animated sparkles / hearts (background) */
+  .hearts {
+    position:absolute; inset:0; pointer-events:none; z-index:0;
+  }
+  .heart {
+    position:absolute; width:12px; height:12px; opacity:0.06; background: #ff8fcf; transform: rotate(-15deg);
+    clip-path: polygon(50% 0%, 61% 12%, 75% 12%, 84% 21%, 84% 37%, 71% 45%, 50% 60%, 29% 45%, 16% 37%, 16% 21%, 25% 12%, 39% 12%);
+    animation: drift linear infinite;
+  }
+  @keyframes drift {
+    0% { transform: translateY(0) scale(0.8) rotate(-10deg); opacity:0.06; }
+    100% { transform: translateY(-220px) scale(1.2) rotate(20deg); opacity:0.0; }
+  }
+
+  /* Start button shown after countdown */
+  .start-btn {
+    display:inline-block; margin-top:14px; padding:14px 34px; border-radius:40px; font-weight:700;
+    background: linear-gradient(90deg,var(--accent1),#ff7ab8); color:white; border:none; cursor:pointer;
+    box-shadow: 0 12px 30px rgba(255,72,177,0.18), 0 4px 12px rgba(0,0,0,0.5);
+    transform: translateY(8px); transition: transform .16s ease;
+    font-size:18px;
+  }
+  .start-btn:active{ transform: translateY(10px) scale(0.995); }
+  .start-btn.hidden { opacity:0; transform: scale(.92); pointer-events:none; }
+
+  /* footer small instructions */
+  .foot { font-size:12px; color: rgba(255,255,255,0.55); margin-top:20px; }
+
+  /* responsive tweaks */
+  @media (max-width:420px){
+    .ring-wrap{ width:200px; height:200px; }
+    .counter .num{ font-size:64px; }
+    .title{ font-size:28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- bunting top -->
+<div class="bunting" aria-hidden="true">
+  <div class="flag"></div><div class="flag"></div><div class="flag"></div><div class="flag"></div><div class="flag"></div><div class="flag"></div><div class="flag"></div><div class="flag"></div>
+</div>
+
+<!-- floating subtle hearts -->
+<div class="hearts" aria-hidden="true">
+  <!-- scattered hearts placed via JS for random positions -->
+</div>
+
+<!-- central cover -->
+<div class="center" role="main" aria-live="polite">
+  <h1 class="title">Happy Birthday — To My Bestie</h1>
+  <div class="ring-wrap" id="ringWrap" aria-hidden="false">
+    <div class="neon-ring" id="neonRing"></div>
+
+    <div class="counter" id="counter">
+      <div class="num" id="countNum">1</div>
+      <div class="small">Crafting your special moment...</div>
+    </div>
+    <div class="ring-shine" style="pointer-events:none"></div>
+  </div>
+
+  <button id="startButton" class="start-btn hidden" aria-hidden="true">Start the Surprise ✨</button>
+  <div class="foot">Tap anywhere to begin • Works on phone & laptop</div>
+</div>
+
+<!-- background music -->
+<audio id="bgAudio" src="bgmusic.mp3" loop preload="auto"></audio>
+
+<script>
+  // ---- cover interactions ----
+  const bgAudio = document.getElementById('bgAudio');
+  const center = document.querySelector('.center');
+  const countNum = document.getElementById('countNum');
+  const startBtn = document.getElementById('startButton');
+  const ring = document.getElementById('neonRing');
+  let countdown = 3;
+  let countdownRunning = false;
+  let heartCount = 14;
+
+  // create subtle hearts at random positions for ambience
+  const heartsContainer = document.querySelector('.hearts');
+  for(let i=0;i<heartCount;i++){
+    const h = document.createElement('div');
+    h.className = 'heart';
+    const left = Math.random()*100; // percent
+    const top = 40 + Math.random()*50; // start lower so they drift up
+    const dur = 6 + Math.random()*8;
+    h.style.left = left + 'vw';
+    h.style.top = top + 'vh';
+    h.style.animationDuration = dur + 's';
+    h.style.opacity = 0.05 + Math.random()*0.06;
+    heartsContainer.appendChild(h);
+  }
+
+  // Subtle pulse speed change helper
+  function setRingSpeed(speedSec){
+    ring.style.animationDuration = speedSec + 's';
+  }
+
+  // Start sequence: on first tap anywhere, unmute/start music and run countdown
+  function beginSequence(){
+    if (countdownRunning) return;
+    countdownRunning = true;
+
+    // Try to play background music (mobile requires gesture). If fails, ignore silently.
+    bgAudio.volume = 0.18; // soft
+    bgAudio.play().catch(()=>{ /* not critical */ });
+
+    // Visual expand / quick ring wobble to cue start
+    setRingSpeed(0.9);
+    ring.style.transform = 'scale(1.06)';
+
+    // Small initial delay so user feels the press
+    setTimeout(()=> {
+      runCountdown(3);
+    }, 220);
+  }
+
+  function runCountdown(n){
+    countdown = n;
+    countNum.textContent = countdown;
+    // animate each second
+    let tick = setInterval(()=>{
+      countdown--;
+      if (countdown > 0){
+        // bounce effect on number
+        countNum.style.transform = 'scale(1.08)';
+        setTimeout(()=> countNum.style.transform = 'scale(1)', 140);
+        countNum.textContent = countdown;
+        setRingSpeed(1.1 - countdown*0.06);
+      } else {
+        clearInterval(tick);
+        // show Start button (animated)
+        showStartButton();
+      }
+    }, 1000);
+  }
+
+  function showStartButton(){
+    // calm ring and show button
+    setRingSpeed(2.0);
+    startBtn.classList.remove('hidden');
+    startBtn.setAttribute('aria-hidden','false');
+
+    // small neon glow effect
+    startBtn.style.boxShadow = '0 16px 40px rgba(255,72,177,0.22), 0 6px 18px rgba(0,0,0,0.6)';
+    // subtle entrance
+    startBtn.animate([{ transform: 'translateY(12px) scale(.92)', opacity:0 }, { transform:'translateY(0) scale(1)', opacity:1 }], {duration:420, easing:'cubic-bezier(.2,.9,.2,1)'});
+  }
+
+  // Begin when user taps anywhere on the center area
+  center.addEventListener('click', beginSequence, { once:true, passive:true });
+
+  // Also accept keyboard Enter for desktop
+  document.addEventListener('keydown', (e)=>{
+    if((e.key === 'Enter' || e.key === ' ') && !countdownRunning){
+      beginSequence();
+    }
+  });
+
+  // Start button click: go to next page (hero.html). Change location if you use a different filename.
+  startBtn.addEventListener('click', ()=>{
+    // small flourish before navigation
+    ring.animate([{ transform:'scale(1)' }, { transform:'scale(1.12)' }, { transform:'scale(0.9)' }], { duration:420, easing:'ease-out' });
+    // play a quick soft sound (if you want, otherwise just navigate)
+    setTimeout(()=> { location.href = 'hero.html'; }, 420);
+  });
+
+  // Accessibility: ensure visible number initially is "1" as design; but real countdown begins on click
+  countNum.textContent = '1';
+</script>
+</body>
+</html>

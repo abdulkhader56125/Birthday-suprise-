@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Happy Birthday Bestie!</title>
+  <!-- Swiper CSS from CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">
+  <style>
+    /* Global styles */
+    body, html { margin:0; padding:0; font-family:sans-serif; height:100%; }
+    .screen { display:none; width:100%; height:100%; text-align:center; }
+    .screen.active { display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    h1, h2 { margin:20px; }
+    button { padding:10px 20px; font-size:16px; margin:10px; cursor:pointer; }
+    /* Cover screen */
+    #cover { background: linear-gradient(135deg, #f6d365, #fda085); color:#fff; position:relative; }
+    #cover h1 { font-size:2em; }
+    #countdown { font-size:5em; margin-top:20px; }
+    /* Hero screen */
+    #hero { flex-direction:column; }
+    .hero-image { max-width:80%; height:auto; border-radius:10px; }
+    .hero-text { font-size:1.5em; margin:20px; }
+    /* Cake screen */
+    #cake { flex-direction:column; }
+    #cakeImage {
+      width:200px; height:200px;
+      background: url('https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/cake.svg') center/contain no-repeat;
+      /* (Replace URL with local image or another cake graphic) */
+    }
+    #cakeMsg { font-size:2em; color:#e91e63; margin-top:20px; }
+    /* Balloons screen */
+    #balloons { flex-direction:column; }
+    .prompt { font-size:1.5em; margin-bottom:20px; }
+    .balloon { width:60px; height:90px; display:inline-block; margin:0 8px; border-radius:50%/60%; position:relative; cursor:pointer; transition:transform 0.5s, opacity 0.5s; }
+    .balloon::after {
+      content:""; position:absolute; bottom:-12px; left:50%; transform:translateX(-50%);
+      width:2px; height:12px; background:#666;
+    }
+    .balloon.pop { transform: scale(1.5); opacity: 0; }
+    .balloon span {
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      font-size:14px; font-weight:bold; color:#333; opacity:0;
+      transition:opacity 0.5s 0.3s;
+    }
+    /* Swiper gallery screen */
+    #gallery { flex-direction:column; }
+    .swiper { width:100%; height:80%; }
+    .swiper-slide img { width:100%; height:auto; }
+    /* Letter card screen */
+    #letter { flex-direction:column; }
+    #card { perspective:1000px; width:80%; max-width:300px; height:200px; position:relative; cursor:pointer; }
+    .card > div { position:absolute; width:100%; height:100%; backface-visibility:hidden; border:2px solid #888; border-radius:8px; background:#fff; padding:20px; box-sizing:border-box; display:flex; align-items:center; justify-content:center; text-align:center; }
+    .card .front { transform: rotateY(0deg); }
+    .card .back { transform: rotateY(180deg); overflow-y:auto; }
+    .card.flipped .front { transform: rotateY(180deg); }
+    .card.flipped .back { transform: rotateY(360deg); }
+    #card h2 { margin:0; }
+    /* Final screen */
+    #final { flex-direction:column; }
+    #final h2 { color:#4caf50; }
+    /* Utility */
+    .hidden { display:none; }
+  </style>
+</head>
+<body>
+
+  <!-- Background Music -->
+  <audio id="bgm" src="bgmusic.mp3" loop></audio>
+
+  <!-- Cover Page -->
+  <div id="cover" class="screen active">
+    <h1>Happy Birthday to my bestie</h1>
+    <div id="countdown">3</div>
+  </div>
+
+  <!-- Hero Page -->
+  <div id="hero" class="screen">
+    <img src="hero.png" alt="Hero" class="hero-image">
+    <p class="hero-text">A cutie pie was born 21 years ago</p>
+    <button id="surpriseBtn">Surprise waiting…</button>
+  </div>
+
+  <!-- Cake Page -->
+  <div id="cake" class="screen">
+    <div id="cakeImage"></div>
+    <button id="lightBtn">Light Candles</button>
+    <h2 id="cakeMsg" class="hidden">Happy Birthday Cutiepie!</h2>
+  </div>
+
+  <!-- Balloons Page -->
+  <div id="balloons" class="screen">
+    <p class="prompt">Your...</p>
+    <div class="balloon" data-word="my bestie" style="background:#ff5252;"></div>
+    <div class="balloon" data-word="my gorgeous" style="background:#ff9800;"></div>
+    <div class="balloon" data-word="my pasandida aurat" style="background:#ffc107;"></div>
+    <div class="balloon" data-word="my madam ji" style="background:#8bc34a;"></div>
+    <div class="balloon" data-word="my cutie pie" style="background:#2196f3;"></div>
+    <div class="balloon" data-word="my beautiful" style="background:#9c27b0;"></div>
+  </div>
+
+  <!-- Photo Gallery -->
+  <div id="gallery" class="screen">
+    <div class="swiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide"><img src="mem1.png"></div>
+        <div class="swiper-slide"><img src="mem2.png"></div>
+        <div class="swiper-slide"><img src="mem3.png"></div>
+        <div class="swiper-slide"><img src="mem4.png"></div>
+        <div class="swiper-slide"><img src="mem5.webp"></div>
+        <div class="swiper-slide"><img src="mem6.webp"></div>
+        <div class="swiper-slide"><img src="mem7.webp"></div>
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+
+  <!-- Letter Card Page -->
+  <div id="letter" class="screen">
+    <div id="card" class="card">
+      <div class="front">
+        <h2>Happy Birthday to You<br>— Tap to Open —</h2>
+      </div>
+      <div class="back">
+        <div style="text-align:left; width:100%; height:100%; overflow-y:auto;">
+          <p>Dear Bestie,</p>
+          <p>On this special day, I want you to know how much you mean to me. You bring joy and laughter into my life, and every moment with you is a precious memory. May this birthday be filled with happiness, surprises, and all the love you deserve.</p>
+          <p>Thank you for being an amazing friend. I cherish our times together and look forward to many more adventures. Happy 21st Birthday, my bestie!</p>
+          <p>With all my love and best wishes,</p>
+          <p><em>[Your Name]</em></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Final Page -->
+  <div id="final" class="screen">
+    <h2>Hope you enjoyed this surprise! 🎉</h2>
+    <button id="restartBtn">Start Again</button>
+  </div>
+
+  <!-- Swiper and Canvas Confetti Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+  <script>
+    // Utility to show/hide screens
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+    // Cover: start audio and countdown on first click
+    const cover = document.getElementById('cover');
+    const countdownEl = document.getElementById('countdown');
+    const bgm = document.getElementById('bgm');
+    cover.addEventListener('click', () => {
+      bgm.play().catch(() => {});
+      startCountdown();
+    }, { once: true });
+    function startCountdown() {
+      let count = 3;
+      countdownEl.textContent = count;
+      let timer = setInterval(() => {
+        count--;
+        countdownEl.textContent = count;
+        if (count <= 0) {
+          clearInterval(timer);
+          showScreen('hero');
+        }
+      }, 1000);
+    }
+
+    // Hero: Surprise button
+    document.getElementById('surpriseBtn').onclick = () => {
+      showScreen('cake');
+    };
+
+    // Cake: Light candles
+    const lightBtn = document.getElementById('lightBtn');
+    const cakeMsg = document.getElementById('cakeMsg');
+    lightBtn.onclick = () => {
+      // Launch confetti
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      cakeMsg.classList.remove('hidden');
+    };
+
+    // Balloons: pop on click
+    document.querySelectorAll('.balloon').forEach(balloon => {
+      balloon.addEventListener('click', () => {
+        // Pop animation
+        balloon.classList.add('pop');
+        // Reveal word after pop
+        const word = document.createElement('span');
+        word.textContent = balloon.dataset.word;
+        balloon.appendChild(word);
+        setTimeout(() => {
+          word.style.opacity = 1;
+        }, 100);
+      });
+    });
+    // After balloons, proceed to gallery on any click
+    document.getElementById('balloons').addEventListener('click', () => {
+      // Check if all popped (or simply proceed)
+      showScreen('gallery');
+    }, { once: true });
+
+    // Initialize Swiper (Gallery)
+    const swiper = new Swiper('.swiper', {
+      pagination: { el: '.swiper-pagination', clickable: true },
+    });
+    // After last image swipe, automatically go to letter
+    // (No built-in event; we could add a button or wait for user)
+    // Here, assume user clicks slide to proceed:
+    document.getElementById('gallery').addEventListener('click', () => {
+      showScreen('letter');
+    }, { once: true });
+
+    // Card: flip on tap
+    const card = document.getElementById('card');
+    card.addEventListener('click', () => {
+      card.classList.toggle('flipped');
+    });
+
+    // Final: restart
+    document.getElementById('restartBtn').onclick = () => {
+      location.reload();
+    };
+  </script>
+</body>
+</html>

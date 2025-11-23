@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pop the Balloons — Surprise</title>
+<style>
+  :root{
+    --bg:#0e0310;
+    --card:#1b0f19;
+    --accent:#ff6fb1;
+    --muted:#bfa7c0;
+    --white: #fff;
+    --glass: rgba(255,255,255,0.03);
+  }
+  html,body{height:100%;margin:0;font-family: "Poppins", "Inter", system-ui, -apple-system, sans-serif;background:linear-gradient(180deg,#0b0510 0%, #120416 70%);color:var(--white);-webkit-font-smoothing:antialiased}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;}
+  .panel{
+    width:100%;
+    max-width:420px;
+    border-radius:20px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    padding:22px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.03);
+  }
+
+  h1{font-size:20px;margin:6px 0 12px;text-align:center;color:var(--accent);font-weight:700}
+  p.sub{font-size:13px;color:var(--muted);text-align:center;margin:0 0 18px}
+  .stage{
+    height:420px; /* mobile portrait friendly */
+    border-radius:14px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));
+    display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+    box-shadow: inset 0 8px 40px rgba(0,0,0,0.6);
+  }
+
+  /* balloon base */
+  .balloon{
+    --size:150px;
+    width:var(--size); height: calc(var(--size) * 1.2);
+    border-radius:50% 50% 45% 45% / 50% 50% 60% 60%;
+    background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.42), rgba(255,255,255,0.12) 10%, rgba(0,0,0,0.04) 60%), linear-gradient(180deg, #ff9aa2, #ff6f91);
+    display:flex;align-items:flex-end;justify-content:center;position:absolute;bottom:60px;
+    transform-origin:50% 100%;
+    transition: transform 300ms ease, opacity 300ms ease;
+    cursor:pointer;
+    will-change:transform,opacity;
+  }
+  /* string */
+  .balloon::after{
+    content:"";
+    width:2px;height:110px;background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.5));
+    position:absolute;left:50%;transform:translateX(-50%);bottom:-110px;border-radius:2px;
+  }
+
+  /* different balloon colors */
+  .b-1{background: radial-gradient(circle at 30% 26%, rgba(255,255,255,0.45), rgba(255,255,255,0.08) 12%), linear-gradient(180deg,#ff8fb5,#ff5aa0);}
+  .b-2{background: radial-gradient(circle at 30% 26%, rgba(255,255,255,0.45), rgba(255,255,255,0.08) 12%), linear-gradient(180deg,#79d7ff,#5aa9ff);}
+  .b-3{background: radial-gradient(circle at 30% 26%, rgba(255,255,255,0.45), rgba(255,255,255,0.08) 12%), linear-gradient(180deg,#ffd77a,#ffb74a);}
+  .b-4{background: radial-gradient(circle at 30% 26%, rgba(255,255,255,0.45), rgba(255,255,255,0.08) 12%), linear-gradient(180deg,#b49bff,#8e6bff);}
+  .b-5{background: radial-gradient(circle at 30% 26%, rgba(255,255,255,0.45), rgba(255,255,255,0.08) 12%), linear-gradient(180deg,#ffa0d6,#ff78c9);}
+  .b-6{background: radial-gradient(circle at 30% 26%, rgba(255,255,255,0.45), rgba(255,255,255,0.08) 12%), linear-gradient(180deg,#7effb8,#4fe39a);}
+
+  /* pop animation (scale to 0 quickly) */
+  .pop {
+    animation: popAnim 400ms forwards;
+  }
+  @keyframes popAnim {
+    0% { transform: scale(1) rotate(0deg); opacity:1; }
+    50% { transform: scale(1.15) rotate(-8deg); }
+    100% { transform: scale(0) rotate(14deg); opacity:0; }
+  }
+
+  /* black reveal overlay */
+  .reveal{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,0);opacity:0;pointer-events:none;
+    transition:background 280ms ease, opacity 280ms ease;
+  }
+  .reveal.show{background:rgba(0,0,0,0.93);opacity:1;pointer-events:auto}
+  .reveal .word{
+    font-size:32px;color:var(--white);font-weight:700;text-align:center;padding:20px;border-radius:12px;
+    text-transform:capitalize;letter-spacing:0.4px;
+    text-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.02);
+  }
+
+  /* controls */
+  .controls{display:flex;gap:10px;justify-content:center;margin-top:14px;}
+  .btn{
+    padding:10px 18px;border-radius:26px;background:linear-gradient(90deg,#ff7ab3,#ff5fb3);
+    color:#fff;border:none;font-weight:600;cursor:pointer;box-shadow:0 8px 20px rgba(255,95,179,0.12);
+  }
+  .btn.secondary{
+    background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);
+  }
+  .status{font-size:13px;text-align:center;color:var(--muted);margin-top:8px}
+
+  /* adapt sizes */
+  @media (min-width:900px){
+    .panel{max-width:560px}
+    .stage{height:520px}
+    .balloon{--size:220px}
+    .reveal .word{font-size:40px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel" role="main">
+    <h1>Pop the Balloons — Surprise</h1>
+    <p class="sub">Tap each balloon. When it pops the screen will reveal a sweet word about her. After 3s the next balloon appears.</p>
+
+    <div class="stage" id="stage" aria-live="polite">
+      <!-- balloons will be injected by JS -->
+      <div class="reveal" id="reveal" aria-hidden="true">
+        <div class="word" id="revealWord">hello</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="resetBtn" class="btn secondary">Reset</button>
+      <button id="skipBtn" class="btn">Skip / Next</button>
+    </div>
+    <div class="status" id="status">Balloon 1 of 6</div>
+  </div>
+</div>
+
+<!-- optional pop audio: name pop.mp3 in same folder (optional) -->
+<audio id="popSound" src="pop.mp3" preload="auto"></audio>
+
+<script>
+/*
+  Behavior:
+  - Show one balloon at a time (center)
+  - On click: pop animation, hide balloon, show black reveal with word (3s)
+  - Then hide reveal and show next balloon
+  - Reset button returns to start
+  - Skip/Next navigates to memories.html immediately
+  - After the final balloon, auto-navigate to memories.html (with a short delay)
+*/
+
+const words = [
+  "my bestie",
+  "my gorgeous",
+  "my pasandida aurat",
+  "my madam ji",
+  "my cutie pie",
+  "my beautiful"
+];
+
+const balloonClasses = ['b-1','b-2','b-3','b-4','b-5','b-6'];
+
+const stage = document.getElementById('stage');
+const reveal = document.getElementById('reveal');
+const revealWord = document.getElementById('revealWord');
+const statusEl = document.getElementById('status');
+const popSound = document.getElementById('popSound');
+
+let index = 0;
+let busy = false;
+const revealDuration = 3000; // 3 seconds as requested
+
+function updateStatus(){
+  statusEl.textContent = `Balloon ${Math.min(index+1, words.length)} of ${words.length}`;
+}
+
+// create balloon element for current index
+function createBalloon(i){
+  // clear existing balloons
+  const existing = stage.querySelectorAll('.balloon');
+  existing.forEach(e => e.remove());
+
+  const b = document.createElement('div');
+  b.className = `balloon ${balloonClasses[i % balloonClasses.length]}`;
+  b.setAttribute('data-idx', i);
+  // starting subtle entrance
+  b.style.opacity = 0;
+  b.style.transform = `translateY(20px) scale(0.95)`;
+  // position center
+  b.style.left = '50%';
+  b.style.transform = 'translateX(-50%) translateY(0)';
+
+  // give slightly varying size for visual interest
+  const sizes = ['130px','150px','160px','140px','150px','155px'];
+  b.style.setProperty('--size', sizes[i % sizes.length]);
+
+  // add a small highlight spot as inner element (looks like sticker)
+  const shine = document.createElement('div');
+  shine.style.position='absolute';
+  shine.style.width='36%';
+  shine.style.height='28%';
+  shine.style.left='18%';
+  shine.style.top='18%';
+  shine.style.borderRadius='50%';
+  shine.style.background='radial-gradient(circle at 35% 30%, rgba(255,255,255,0.55), rgba(255,255,255,0.12) 28%, rgba(255,255,255,0.02) 68%)';
+  shine.style.pointerEvents='none';
+  b.appendChild(shine);
+
+  // click / tap handler
+  b.addEventListener('pointerdown', async (ev)=>{
+    if(busy) return;
+    busy = true;
+    // small haptic-friendly scale (instant)
+    b.style.transition = 'transform 120ms ease';
+    b.style.transform += ' scale(0.98)';
+    // slight delay to let pointer animation feel
+    setTimeout(()=>popBalloon(b), 80);
+  });
+
+  stage.appendChild(b);
+
+  // entrance animation
+  requestAnimationFrame(()=> {
+    b.style.transition = 'transform 480ms cubic-bezier(.17,.85,.45,1), opacity 480ms';
+    b.style.opacity = 1;
+    b.style.transform = 'translateX(-50%) translateY(0) scale(1)';
+  });
+
+  updateStatus();
+}
+
+function playPopSound(){
+  if(popSound && popSound.src){
+    try{
+      popSound.currentTime = 0;
+      popSound.play().catch(()=>{/* autoplay may be blocked on mobile until user gesture; it's ok */});
+    }catch(e){}
+  }
+}
+
+async function popBalloon(ballEl){
+  // play sound
+  playPopSound();
+
+  // add pop class to animate scale->0
+  ballEl.classList.add('pop');
+
+  // small burst particles (simple CSS dots) --- create briefly
+  const burst = document.createElement('div');
+  burst.style.position='absolute';
+  burst.style.left='50%'; burst.style.top='40%';
+  burst.style.transform='translate(-50%,-50%)';
+  burst.style.width='220px'; burst.style.height='220px';
+  burst.style.pointerEvents='none';
+  stage.appendChild(burst);
+
+  // create a few small particles
+  for(let i=0;i<12;i++){
+    const p = document.createElement('div');
+    p.style.position='absolute';
+    p.style.width='8px'; p.style.height='8px'; p.style.borderRadius='50%';
+    p.style.left='50%'; p.style.top='50%';
+    p.style.background = ['#ffd7e6','#ffb8d2','#ffd77a','#b49bff','#79d7ff','#7effb8'][i%6];
+    p.style.transformOrigin='50% 50%';
+    p.style.opacity='0.95';
+    burst.appendChild(p);
+    // random fly out
+    const angle = (Math.random()*Math.PI*2);
+    const dist = 50 + Math.random()*120;
+    p.animate([
+      { transform: 'translate(0px,0px) scale(1)', opacity:1 },
+      { transform: `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px) scale(0.6)`, opacity:0 }
+    ], { duration: 500 + Math.random()*400, easing:'cubic-bezier(.17,.85,.45,1)' });
+  }
+
+  // wait until pop animation ends (~400ms)
+  await new Promise(r => setTimeout(r, 420));
+
+  // remove the balloon (already shrunk), remove burst after a bit
+  ballEl.remove();
+
+  // show reveal screen with word
+  const word = words[index] ?? '';
+  revealWord.textContent = word;
+  reveal.classList.add('show');
+  reveal.setAttribute('aria-hidden','false');
+
+  // wait revealDuration
+  await new Promise(r => setTimeout(r, revealDuration));
+
+  // hide reveal and prepare next
+  reveal.classList.remove('show');
+  reveal.setAttribute('aria-hidden','true');
+
+  // remove burst particles cleanup
+  burst.remove();
+
+  // move to next
+  index++;
+  if(index < words.length){
+    // small gap before next balloon (to match cinematic pause)
+    await new Promise(r => setTimeout(r, 320));
+    createBalloon(index);
+    busy = false;
+  } else {
+    // finished all balloons
+    statusEl.textContent = 'All balloons popped — surprise complete 🎉';
+    busy = false;
+    // Navigate to memories.html after a short cinematic pause
+    setTimeout(() => {
+      window.location.href = "memories.html";
+    }, 1200);
+  }
+}
+
+// reset to start
+function resetAll(){
+  index = 0;
+  busy = false;
+  reveal.classList.remove('show');
+  // remove any balloons and then create first
+  const existing = stage.querySelectorAll('.balloon');
+  existing.forEach(e => e.remove());
+  createBalloon(0);
+}
+
+// skip / next (IMMEDIATE NAVIGATION)
+function skipNext(){
+  // Go directly to memories.html when user presses Skip/Next
+  window.location.href = "memories.html";
+}
+
+// init
+document.getElementById('resetBtn').addEventListener('click', resetAll);
+document.getElementById('skipBtn').addEventListener('click', skipNext);
+
+// keyboard accessibility: Enter / Space to pop
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' || e.key === ' '){
+    const b = stage.querySelector('.balloon');
+    if(b && !busy) popBalloon(b);
+  }
+});
+
+// kick off
+resetAll();
+</script>
+</body>
+</html>

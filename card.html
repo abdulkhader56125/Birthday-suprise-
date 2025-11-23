@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Special Message — Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07030a;
+    --pink1:#ff5fa6;
+    --pink2:#ff88c4;
+    --paper:#fffaf6;
+    --muted:#bfa3c0;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:radial-gradient(900px 500px at 10% 10%, rgba(255,90,160,0.04), transparent), linear-gradient(180deg,#07030a,#0b0310);font-family:Montserrat,system-ui,Arial;color:#fff}
+  .stage{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+
+/* container */
+  .container { width:100%; max-width:920px; height:88vh; max-height:840px; position:relative; display:flex; align-items:center; justify-content:center; }
+
+/* cover area (centered big) */
+  .coverCard {
+    width:86%; max-width:560px; height:78%; max-height:680px; border-radius:26px; background:linear-gradient(180deg,var(--pink2),var(--pink1)); display:flex; flex-direction:column; align-items:center; padding:18px; box-shadow:0 40px 140px rgba(0,0,0,0.6);
+    transform-origin:center center; transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity 550ms;
+  }
+  .heroFrame { width:88%; height:68%; border-radius:14px; overflow:hidden; box-shadow:0 30px 70px rgba(0,0,0,0.45); display:block; margin-top:8px; }
+  .heroFrame img{ width:100%; height:100%; object-fit:cover; display:block }
+  .coverTitle { font-family:Pacifico, cursive; font-size:36px; color:white; margin-top:10px; text-shadow:0 10px 26px rgba(0,0,0,0.3) }
+  .coverSub { color:#ffe6ef; font-size:14px; margin-bottom:8px }
+  .coverButtons { margin-top:12px; display:flex; gap:12px; align-items:center; }
+  .btn { cursor:pointer; user-select:none; border:0; padding:12px 22px; border-radius:30px; font-weight:700}
+  .btn.open { background:linear-gradient(90deg,#ffd0ea,#ff7bb3); color:#1b0b13; box-shadow:0 12px 35px rgba(255,90,160,0.12) }
+  .btn.ghost { background:transparent; color:rgba(255,255,255,0.95); border:1px solid rgba(255,255,255,0.06) }
+
+/* hidden inner page (revealed after open) */
+  .innerPanel {
+    position:absolute; top:6%; right:6%; bottom:6%; left:6%;
+    border-radius:18px; background:linear-gradient(180deg,#fffaf6,#fff1e9); color:#210b12; padding:28px; box-shadow: 0 40px 110px rgba(0,0,0,0.75); overflow:auto;
+    transform: scale(0.96) translateY(20px); opacity:0; pointer-events:none; transition: all 650ms cubic-bezier(.2,.9,.2,1);
+  }
+  .innerPanel.open { transform: scale(1) translateY(0); opacity:1; pointer-events:auto; }
+  .innerPanel h1{ font-family:Pacifico,cursive; color:var(--pink1); margin:0 0 8px; font-size:34px }
+  .innerPanel .meta { color:var(--muted); margin-bottom:18px; font-size:13px; }
+  .innerPanel .content { color:#2b1b21; font-size:16px; line-height:1.9; white-space:pre-wrap; padding-bottom:84px; } /* extra bottom padding so Next doesn't overlap content */
+  .closeBtn { position:absolute; top:18px; right:20px; background:transparent; color:#3b2a36; border:0; font-weight:700; padding:10px 12px; border-radius:12px; cursor:pointer }
+
+/* Next button bar (fixed bottom inside panel) */
+  .nextBar {
+    position:absolute; left:28px; right:28px; bottom:18px; display:flex; justify-content:center; gap:14px; align-items:center;
+  }
+  .nextBtn {
+    appearance:none; -webkit-appearance:none;
+    background:linear-gradient(90deg,#ff7bb3,#ffd0ea); border:0; padding:12px 30px; border-radius:30px; font-weight:800; color:#23060b;
+    box-shadow: 0 12px 28px rgba(255,90,160,0.12), inset 0 -2px 6px rgba(0,0,0,0.06); cursor:pointer;
+    font-size:16px;
+  }
+  .nextBtn:active{ transform:translateY(1px) }
+
+  /* responsive */
+  @media (max-width:720px){
+    .coverCard{ width:94%; height:72%; }
+    .innerPanel{ left:3%; right:3%; top:6%; bottom:6%; padding:20px }
+    .innerPanel h1{ font-size:28px }
+    .nextBar{ left:20px; right:20px; bottom:16px }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="container" role="application" aria-label="Birthday card">
+
+    <!-- cover shown first -->
+    <div class="coverCard" id="cover" tabindex="0" aria-label="Cover - tap to open">
+      <div class="coverTitle">Happy Birthday</div>
+      <div class="coverSub">to my Bestie</div>
+      <div class="heroFrame">
+        <img src="hero.png" alt="hero image" id="heroImg" onerror="this.style.opacity=.4">
+      </div>
+      <div class="coverButtons">
+        <button class="btn open" id="openBtn">Open</button>
+        <button class="btn ghost" id="previewBtn">Preview</button>
+      </div>
+    </div>
+
+    <!-- Inner message panel (hidden until open) -->
+    <div class="innerPanel" id="inner" aria-hidden="true">
+      <button class="closeBtn" id="closeBtn" aria-label="Close message">Close ✕</button>
+      <h1>A Special Message</h1>
+      <div class="meta">From a friend who calls you — <strong>My Bestie</strong></div>
+      <div class="content" id="messageContent" tabindex="0">
+   <b>Hey Bestie,</b>
+     Happy Birthday to the girl who came into my life unexpectedly and became one of the most important people to me.
+      I don’t know how to explain it, but life genuinely feels lighter, happier, and more meaningful because you’re in it.
+     
+     Thank you for being the person I can talk to about anything…
+       the one I can laugh with, fight with, share secrets with, irritate, and still feel safe around.
+        Not everyone gets a friendship like this — and I’m grateful Allah gave me you.
+
+   You’ve seen my moods, my stupidity, my silence, my chaos… and still stayed.
+   And trust me, that means more to me than you will ever know.
+
+  On your special day, I pray Allah fills your life with peace, happiness, strength, and everything your heart desires.
+You deserve all the good things in this world.
+
+Just remember —
+No matter how life changes… you’ll always have a permanent place in my life.
+Always.
+
+  <b>Once again Happy Birthday, Bestie.
+— Yours, forever bestfriend</b>
+</div>
+            </div>
+    </div>
+
+      <!-- Next button bar inside panel -->
+      <div class="nextBar" role="group" aria-label="Next controls">
+        <button class="nextBtn" id="nextBtn" aria-label="Next — go to final message">Next →</button>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<audio id="bgmusic" src="bgmusic1.mp3" loop preload="auto"></audio>
+
+<script>
+/* Behavior:
+ - cover visible first
+ - clicking cover or Open opens the inner panel and hides cover (cover scales down & dims)
+ - Close button reverts to cover
+ - Next button navigates to final.html (placeholder)
+ - Escape to close; Enter on cover to open
+ - preview does a small wiggle
+*/
+(function(){
+  const cover = document.getElementById('cover');
+  const openBtn = document.getElementById('openBtn');
+  const previewBtn = document.getElementById('previewBtn');
+  const inner = document.getElementById('inner');
+  const closeBtn = document.getElementById('closeBtn');
+  const bg = document.getElementById('bgmusic');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function showInner(){
+    cover.style.transform = 'scale(0.94) translateY(12px) rotateX(0deg)';
+    cover.style.opacity = '0.18';
+    inner.classList.add('open');
+    inner.setAttribute('aria-hidden', 'false');
+    // try to play music on user action
+    bg.play().catch(()=>{});
+    // focus first scrollable content for accessibility
+    setTimeout(()=> document.getElementById('messageContent').focus(), 420);
+  }
+  function hideInner(){
+    inner.classList.remove('open');
+    inner.setAttribute('aria-hidden', 'true');
+    cover.style.transform = '';
+    cover.style.opacity = '1';
+    try{ bg.pause(); bg.currentTime = 0; } catch(e){}
+    cover.focus();
+  }
+
+  cover.addEventListener('click', () => showInner());
+  openBtn.addEventListener('click', (e)=>{ e.stopPropagation(); showInner(); });
+  previewBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    cover.animate([
+      { transform: 'translateY(0) rotateZ(0)' },
+      { transform: 'translateY(-8px) rotateZ(-1deg)' },
+      { transform: 'translateY(0) rotateZ(0)' }
+    ], { duration:420, easing:'cubic-bezier(.2,.9,.2,1)'});
+  });
+
+  closeBtn.addEventListener('click', ()=> hideInner());
+
+  // keyboard
+  cover.addEventListener('keydown', (ev)=>{
+    if(ev.key === 'Enter') showInner();
+  });
+  document.addEventListener('keydown', (ev)=>{
+    if(ev.key === 'Escape') hideInner();
+  });
+
+  // Next button behavior - navigates to final.html (placeholder)
+  nextBtn.addEventListener('click', ()=> {
+    // small animation to show button pressed
+    nextBtn.animate([{ transform:'translateY(0)' }, { transform:'translateY(-6px)' }, { transform:'translateY(0)' }], { duration:300, easing:'ease-out' });
+    // navigate to placeholder final page
+    window.location.href = 'final.html';
+  });
+
+})();
+</script>
+</body>
+</html>

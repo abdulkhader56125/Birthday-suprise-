@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Some Sweet Moments — Memories (Improved Swipe)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08020a;
+    --panel:#120516;
+    --accent:#ff69b4;
+    --muted:#c6b0cf;
+    --cardGlow: 0 18px 60px rgba(255,90,160,0.12);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#08020a,#0a0212);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#fff}
+  .wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px 18px 36px}
+  header{width:100%;max-width:960px;margin-top:6px;display:flex;align-items:center;justify-content:center}
+  h1{font-family:Pacifico, cursive;font-size:36px;margin:6px 0 2px;color:var(--accent);text-align:center;text-shadow:0 6px 22px rgba(0,0,0,0.7)}
+  .subtitle{color:var(--muted);font-size:14px;margin-bottom:18px;text-align:center}
+
+  /* stage */
+  .stage{width:100%;max-width:640px; height:74vh; max-height:880px; display:flex; flex-direction:column; align-items:center; gap:12px; margin:8px 0; }
+  .stack-wrap{position:relative; width:94%; height:68%; max-height:600px; min-height:320px; display:flex; align-items:center; justify-content:center; margin-bottom:20px;}
+  .card-stack{position:relative; width:100%; height:100%; perspective:1600px; display:flex; align-items:center; justify-content:center; touch-action:none; /* important for pointer events */ }
+
+  .card{
+    --r: 0deg;
+    position:absolute; left:50%; top:50%; transform: translate(-50%,-50%) rotate(var(--r)) translateY(var(--ty,0px));
+    width:72%; max-width:480px; height:78%; border-radius:18px; overflow:hidden;
+    background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.05));
+    box-shadow: var(--cardGlow), 0 10px 30px rgba(0,0,0,0.5);
+    border:1px solid rgba(255,255,255,0.04); display:flex;align-items:center;justify-content:center;
+    transition: transform 360ms cubic-bezier(.2,.9,.3,1), opacity 260ms ease, filter 260ms ease;
+    -webkit-user-select:none; user-select:none;
+  }
+
+  .card img{width:100%; height:100%; object-fit:cover; display:block; filter:contrast(1.02) saturate(1.02);}
+
+  /* slight fanned stack */
+  .card:nth-child(1){ z-index:70; --r:-2deg; --ty:-6px;}
+  .card:nth-child(2){ z-index:60; --r:6deg;  --ty:10px; opacity:0.99;}
+  .card:nth-child(3){ z-index:50; --r:-8deg; --ty:20px; opacity:0.97;}
+  .card:nth-child(4){ z-index:40; --r:6deg;  --ty:30px; opacity:0.95;}
+  .card:nth-child(5){ z-index:30; --r:-6deg; --ty:42px; opacity:0.93;}
+  .card:nth-child(6){ z-index:20; --r:6deg;  --ty:56px; opacity:0.90;}
+  .card:nth-child(7){ z-index:10; --r:-2deg; --ty:72px; opacity:0.88;}
+
+  .card.is-active{ box-shadow: 0 26px 80px rgba(255,90,160,0.18), 0 18px 40px rgba(0,0,0,0.6); transform: translate(-50%,-50%) scale(1.02) rotate(var(--r)); z-index:99; filter:brightness(1.02); }
+
+  .controls-wrap{width:100%; max-width:640px; display:flex; flex-direction:column; align-items:center; gap:14px; margin-top:12px; padding-top:18px}
+  .controls{display:flex; gap:18px; align-items:center; justify-content:center}
+  .btn{background:linear-gradient(90deg,#ff6fb3,#ff4fa6); padding:12px 20px; border-radius:36px; color:#fff; font-weight:700; border:0; cursor:pointer; box-shadow:0 10px 30px rgba(255,79,140,0.12)}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px 14px; font-weight:600}
+  .open-btn{background:linear-gradient(90deg,#ff88c4,#ff5fa6); padding:12px 26px; border-radius:36px; font-size:16px}
+
+  .controls { margin-top:10px; }
+  .controls-space { height: 14px; } /* extra space between stack and controls */
+
+  .thumb-row{position:relative; height:64px; width:100%; max-width:640px; display:flex; align-items:center; gap:10px; justify-content:center; margin-top:8px}
+  .thumb-row img{width:64px; height:64px; border-radius:8px; object-fit:cover; box-shadow:0 8px 24px rgba(0,0,0,0.45); border:2px solid rgba(255,255,255,0.03)}
+
+  @media (max-width:560px){
+    .card{ width:86%; height:74%;}
+    h1{ font-size:30px }
+    .controls{gap:10px}
+    .thumb-row img{width:52px;height:52px}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Some Sweet Moments</h1>
+        <div class="subtitle">(Swipe the cards)</div>
+      </div>
+    </header>
+
+    <main class="stage" role="main">
+      <div class="stack-wrap" aria-label="Memories stack">
+        <div class="card-stack" id="cardStack" aria-live="polite">
+          <!-- put your images in the same folder as this file -->
+          <div class="card" data-index="0"><img src="mem7.webp" alt="memory 7" onerror="this.parentElement.style.display='none'"></div>
+          <div class="card" data-index="1"><img src="mem6.webp" alt="memory 6" onerror="this.parentElement.style.display='none'"></div>
+          <div class="card" data-index="2"><img src="mem5.webp" alt="memory 5" onerror="this.parentElement.style.display='none'"></div>
+          <div class="card" data-index="3"><img src="mem4.png"  alt="memory 4" onerror="this.parentElement.style.display='none'"></div>
+          <div class="card" data-index="4"><img src="mem3.png"  alt="memory 3" onerror="this.parentElement.style.display='none'"></div>
+          <div class="card" data-index="5"><img src="mem2.png"  alt="memory 2" onerror="this.parentElement.style.display='none'"></div>
+          <div class="card" data-index="6"><img src="mem1.png"  alt="memory 1" onerror="this.parentElement.style.display='none'"></div>
+        </div>
+      </div>
+
+      <div class="controls-wrap" aria-hidden="false">
+        <div class="controls-space" aria-hidden="true"></div>
+        <div class="controls" role="navigation" aria-label="Memory controls">
+          <button class="btn ghost" id="prevBtn">Prev</button>
+          <button class="btn" id="replayBtn">Replay</button>
+          <button class="btn ghost" id="nextBtn">Next</button>
+        </div>
+
+        <!-- open message button placed BELOW controls per your request -->
+        <div style="display:flex;justify-content:center;width:100%; margin-top:6px;">
+          <button class="btn open-btn" id="openMsgBtn">✉️ Open My Message</button>
+        </div>
+
+        <!-- optional thumbnails (click to bring that card to top) -->
+        <div class="thumb-row" id="thumbRow" aria-hidden="true"></div>
+      </div>
+    </main>
+  </div>
+
+<!-- optional background music (place bgmusic.mp3 in same folder) -->
+<audio id="bgmusic" src="bgmusic.mp3" loop preload="auto"></audio>
+
+<script>
+/*
+ Improved pointer-based swipe:
+ - pointerdown/capture
+ - requestAnimationFrame for transform updates
+ - larger threshold; smoother snap-back/out
+ - disabled buttons while animating
+ - more gap between cards and controls
+*/
+(function(){
+  const stack = document.getElementById('cardStack');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const replayBtn = document.getElementById('replayBtn');
+  const thumbRow = document.getElementById('thumbRow');
+  const openMsgBtn = document.getElementById('openMsgBtn');
+  const bgmusic = document.getElementById('bgmusic');
+
+  let cards = Array.from(stack.querySelectorAll('.card')).filter(c=>getComputedStyle(c).display!=='none');
+  if(cards.length === 0){
+    const ph = document.createElement('div');
+    ph.className = 'card';
+    ph.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted)">No memory images found. Put mem1.png ... mem7.webp in the same folder.</div>';
+    stack.appendChild(ph);
+    cards = [ph];
+  }
+
+  // thumbnails
+  thumbRow.innerHTML = '';
+  cards.slice().reverse().forEach(c=>{
+    const img = c.querySelector('img');
+    if(!img) return;
+    const t = document.createElement('img');
+    t.src = img.src;
+    t.alt = img.alt;
+    t.loading = 'lazy';
+    t.addEventListener('click', ()=> rotateToTop(cards.indexOf(c)));
+    thumbRow.appendChild(t);
+  });
+  if(thumbRow.children.length === 0) thumbRow.style.display = 'none';
+
+  function refresh(){
+    cards = Array.from(stack.querySelectorAll('.card')).filter(c=>getComputedStyle(c).display!=='none');
+    cards.forEach((c,i)=>{
+      c.classList.toggle('is-active', i === (cards.length-1));
+    });
+  }
+  refresh();
+
+  // rotate to top by moving element to end of DOM
+  function rotateToTop(idx){
+    const all = Array.from(stack.querySelectorAll('.card')).filter(n=>getComputedStyle(n).display!=='none');
+    const node = all[idx];
+    if(!node) return;
+    stack.appendChild(node);
+    refresh();
+  }
+
+  // pointer drag logic
+  let activePointerId = null;
+  let startX=0, startY=0;
+  let currentX=0, currentY=0;
+  let draggingEl = null;
+  let dragging = false;
+  let raf = null;
+  let animating = false;
+  const SWIPE_THRESHOLD = 130; // px
+
+  function onPointerDown(e){
+    // only allow when top card exists and not animating
+    if(animating) return;
+    // only the last child (top) is draggable
+    const top = stack.querySelector('.card:last-child');
+    if(!top) return;
+    // set capture
+    draggingEl = top;
+    activePointerId = e.pointerId;
+    startX = e.clientX;
+    startY = e.clientY;
+    currentX = 0; currentY = 0;
+    dragging = true;
+    draggingEl.setPointerCapture(activePointerId);
+    draggingEl.style.transition = 'none';
+    draggingEl.classList.add('is-active');
+
+    // ensure music allowed
+    try{ bgmusic.play().catch(()=>{}); }catch(err){}
+    // listen move/up on the element
+    draggingEl.addEventListener('pointermove', onPointerMove);
+    draggingEl.addEventListener('pointerup', onPointerUp);
+    draggingEl.addEventListener('pointercancel', onPointerUp);
+    // start RAF
+    scheduleRAF();
+  }
+
+  function onPointerMove(e){
+    if(!dragging || e.pointerId !== activePointerId) return;
+    currentX = e.clientX - startX;
+    currentY = e.clientY - startY;
+  }
+
+  function onPointerUp(e){
+    if(!dragging) return;
+    dragging = false;
+    cancelRAF();
+
+    const dx = currentX;
+    const absX = Math.abs(dx);
+
+    // release capture
+    try{ draggingEl.releasePointerCapture(activePointerId); }catch(err){}
+    draggingEl.removeEventListener('pointermove', onPointerMove);
+    draggingEl.removeEventListener('pointerup', onPointerUp);
+    draggingEl.removeEventListener('pointercancel', onPointerUp);
+
+    // threshold check
+    if(absX > SWIPE_THRESHOLD){
+      const dir = dx > 0 ? 1 : -1;
+      animateOutAndCycle(draggingEl, dir);
+    } else {
+      // snap back
+      draggingEl.style.transition = 'transform 360ms cubic-bezier(.2,.9,.3,1), opacity 240ms ease';
+      draggingEl.style.transform = '';
+      draggingEl.style.opacity = '';
+      setTimeout(()=> {
+        draggingEl.style.transition = '';
+        draggingEl.classList.remove('is-active');
+      }, 360);
+    }
+    draggingEl = null;
+    activePointerId = null;
+  }
+
+  function scheduleRAF(){
+    if(raf) return;
+    raf = requestAnimationFrame(updateDrag);
+  }
+  function cancelRAF(){
+    if(raf){ cancelAnimationFrame(raf); raf = null; }
+  }
+  function updateDrag(){
+    raf = null;
+    if(!draggingEl) return;
+    // compute transform based on currentX/currentY
+    const dx = currentX;
+    const dy = currentY * 0.6; // damp vertical
+    const rot = dx * 0.03; // small rotate
+    // opacity falloff
+    const opacity = 1 - Math.min(Math.abs(dx) / 1000, 0.7);
+    draggingEl.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) rotate(${rot}deg)`;
+    draggingEl.style.opacity = opacity;
+    // continue
+    scheduleRAF();
+  }
+
+  // animate card out and then move it to start of stack (cycle)
+  function animateOutAndCycle(el, dir){
+    animating = true;
+    disableButtons(true);
+    el.style.transition = 'transform 420ms cubic-bezier(.2,.9,.3,1), opacity 320ms ease';
+    el.style.transform = `translate(calc(-50% + ${dir*1100}px), calc(-50% + -20px)) rotate(${dir*28}deg)`;
+    el.style.opacity = 0;
+    setTimeout(()=>{
+      // move to start (so next card becomes top)
+      stack.insertBefore(el, stack.firstChild);
+      // reset styles so it sits at back
+      el.style.transition = '';
+      el.style.transform = '';
+      el.style.opacity = '';
+      refresh();
+      animating = false;
+      disableButtons(false);
+    }, 440);
+  }
+
+  // attach pointerdown to stack (so single finger works)
+  stack.addEventListener('pointerdown', onPointerDown);
+
+  // keyboard and buttons
+  function disableButtons(flag){
+    [prevBtn,nextBtn,replayBtn,openMsgBtn].forEach(b=> b.disabled = flag );
+    if(flag){
+      [prevBtn,nextBtn,replayBtn,openMsgBtn].forEach(b=> b.style.opacity = '0.6');
+    } else {
+      [prevBtn,nextBtn,replayBtn,openMsgBtn].forEach(b=> b.style.opacity = '1');
+    }
+  }
+
+  nextBtn.addEventListener('click', ()=>{
+    if(animating) return;
+    const top = stack.querySelector('.card:last-child');
+    if(!top) return;
+    animateOutAndCycle(top, 1);
+  });
+  prevBtn.addEventListener('click', ()=>{
+    if(animating) return;
+    const first = stack.firstElementChild;
+    if(!first) return;
+    // bring first to top (append to end) with small animation
+    disableButtons(true);
+    first.style.transition = 'transform 260ms ease';
+    first.style.transform = 'translateY(-10px) scale(0.98)';
+    setTimeout(()=> {
+      stack.appendChild(first);
+      first.style.transition = '';
+      first.style.transform = '';
+      refresh();
+      disableButtons(false);
+    }, 260);
+  });
+
+  replayBtn.addEventListener('click', ()=>{
+    if(animating) return;
+    // try to reorder to mem1..mem7 based on filename memN if present, best-effort
+    const imgs = Array.from(stack.querySelectorAll('img')).filter(i=>i.src);
+    imgs.sort((a,b)=>{
+      const na = (a.src||'').match(/mem(\d+)/i);
+      const nb = (b.src||'').match(/mem(\d+)/i);
+      return (na ? parseInt(na[1]) : 999) - (nb ? parseInt(nb[1]) : 999);
+    });
+    imgs.forEach(img => { if(img.parentElement) stack.appendChild(img.parentElement); });
+    refresh();
+  });
+
+  // thumbnails click rotate
+  thumbRow.querySelectorAll('img').forEach((t,i)=>{
+    t.addEventListener('click', ()=> rotateToTop(cards.length - 1 - i));
+  });
+
+  // open message: try to open card.html
+  openMsgBtn.addEventListener('click', ()=>{
+    fetch('card.html', {method:'HEAD'}).then(r=>{
+      if(r.ok) window.location.href = 'card.html';
+      else alert("card.html not found — place your invitation page (card.html) in the same folder or edit the link.");
+    }).catch(()=> alert("card.html not found — place your invitation page (card.html) in the same folder or edit the link."));
+  });
+
+  // start bgmusic after a user gesture
+  let firstGesture = false;
+  function allowMusicPlay(){
+    if(firstGesture) return;
+    firstGesture = true;
+    bgmusic.play().catch(()=>{});
+    window.removeEventListener('click', allowMusicPlay);
+    window.removeEventListener('touchstart', allowMusicPlay);
+  }
+  window.addEventListener('click', allowMusicPlay);
+  window.addEventListener('touchstart', allowMusicPlay, {passive:true});
+
+  // keyboard support
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'ArrowLeft') prevBtn.click();
+    if(e.key === 'ArrowRight') nextBtn.click();
+    if(e.key === ' ') { e.preventDefault(); nextBtn.click(); }
+  });
+
+  // ensure initial refresh
+  refresh();
+})();
+</script>
+</body>
+</html>
